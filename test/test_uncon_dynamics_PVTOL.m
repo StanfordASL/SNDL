@@ -2,6 +2,13 @@ function [t_ref,errors,t_span,X] = test_uncon_dynamics_PVTOL(N_itr,do_plot,t_ref
 
 %Simulate unconstrained (l2-reg) model
 
+%%%%% Inputs %%%%%%
+%N_itr: #points used in training (demonstration) set for regression loss
+%(used to identify model)
+%do_plot: boolean for display plots
+%t_ref,x_opt,u_opt: time,state, and control reference trajectories from
+%trajectory optimizer
+
 close all;
 
 %% Load trajectories

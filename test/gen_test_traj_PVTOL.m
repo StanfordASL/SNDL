@@ -3,7 +3,7 @@ function gen_test_traj_PVTOL(N,type,N_itr)
 %Generate test trajectories
 
 %%%%%% Inputs %%%%%%%
-%N: grid discretization over (px,pz) -> gen N^2 trajectories
+%N: grid discretization over (px,pz) -> generate N^2 trajectories
 %type: 'uncon': unconstrained, regularized baseline model
 %      'unconu': unconstrained, un-regularized baseline model
 %      'ccm': CCM regularized model

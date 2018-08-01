@@ -1,6 +1,15 @@
 function [t_ref,errors,t_span,X,E_geod,lamb] = test_CCM_dynamics_PVTOL(N_itr,do_plot,use_ccm,t_ref,x_opt,u_opt)
 
 % Simulate CCM Model
+
+%%%%% Inputs %%%%%%
+%N_itr: #points used in training (demonstration) set for regression loss
+%(used to identify model)
+%do_plot: boolean for display plots
+%use_ccm: true if use hybrid CCM-LQR or false if use LQR
+%t_ref,x_opt,u_opt: time,state, and control reference trajectories from
+%trajectory optimizer
+
 close all; 
 
 %% Load dynamics

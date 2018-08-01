@@ -1,7 +1,7 @@
 function analyze_PVTOL_results(N_tr,hybrid)
 
 %N_tr: #points used in training (demonstration) set for regression loss
-%hybrid: also present results for CCM-hybrid sims
+%hybrid: boolean to also present results for CCM-hybrid sims (if availabe)
 
 %% Load results
 

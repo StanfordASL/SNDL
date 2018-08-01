@@ -18,7 +18,8 @@ N_tr = 1000; %upto N_max (max number of demonstration tuples)
 Xtr_i = round((linspace(1,N_max,N_tr))'); 
 
 %for constraints (dynamically updating)
-Xc_i = randperm(size(X,1),200); Xc_i = Xc_i';
+Nc = 200; %initial size of constraint set
+Xc_i = randperm(size(X,1),Nc); Xc_i = Xc_i';
 
 fprintf('N:%d, Nc = %d, N_tr = %d\n',size(X,1), length(Xc_i), N_tr);
 
@@ -27,7 +28,6 @@ fprintf('N:%d, Nc = %d, N_tr = %d\n',size(X,1), length(Xc_i), N_tr);
 n = size(X,2);
 m = size(U,2);
 N = size(X,1);
-Nc = length(Xc_i);
 
 load_PVTOL_params;
 
