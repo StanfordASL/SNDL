@@ -1,6 +1,6 @@
 # SNDL: Stabilizable Nonlinear Dynamics Learning
 
-Code to accompany: Learning Stabilizable Dynamical Systems via Control Contraction Metrics
+Code to accompany: [Learning Stabilizable Dynamical Systems via Control Contraction Metrics](https://arxiv.org/abs/1808.00113)
 
 ## Getting Started
 
