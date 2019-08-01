@@ -22,23 +22,16 @@ Perm_Tr = sparse(Perm_Tr);
 
 features = struct('P_f',P_f,'P_b',P_b,'Perm_Tr',Perm_Tr);
     
-%% Get Function gradient handles (For step 2 Newton descent)
+%% Get Function gradient handles (For Step 2 Newton Descent)
 
 [dF_dalpha_h, dF_dtheta_h, dW_h] = gen_func_gradients(om_f,om_b,kernel_f,kernel_b,n,m,om_w_p,om_w_np,eps_l,w_const);
 
 %% First do an independent unconstrained solve
 
 %Unconstrainted, regularized baseline
-[alpha_un, beta_un] = solve_dynamics_unconstrained(Perm_Tr,P_f,P_b,U,X_dot,1.0e-4,mu_b,n,m,Xtr_i,N_tr,D_dyn);
+[alpha_un, beta_un] = solve_dynamics_unconstrained(Perm_Tr,P_f,P_b,U,X_dot,mu_f,mu_b,n,m,Xtr_i,N_tr,D_dyn);
 [f_h, B_h, df_h, dB_h] = construct_dyn(om_f, alpha_un, om_b, beta_un, O_dyn, kernel_f.L, kernel_b.L,n,m);
 save(strcat('learned_functions/PVTOL_H_uncon_Dyn_Functions_',num2str(N_tr),'.mat'),...
-        'f_h','B_h','df_h','dB_h');
-clear f_h B_h df_h dB_h;
-
-% %Unconstrainted, unregularized baseline
-[alpha_unu, beta_unu] = solve_dynamics_unconstrained(Perm_Tr,P_f,P_b,U,X_dot,0.0,mu_b,n,m,Xtr_i,N_tr,D_dyn);
-[f_h, B_h, df_h, dB_h] = construct_dyn(om_f, alpha_unu, om_b, beta_unu, O_dyn, kernel_f.L, kernel_b.L,n,m);
-save(strcat('learned_functions/PVTOL_H_unconu_Dyn_Functions_',num2str(N_tr),'.mat'),...
         'f_h','B_h','df_h','dB_h');
 clear f_h B_h df_h dB_h;
 
@@ -141,12 +134,12 @@ while (itr < max_itr) && (var_diff > eps_term) && (~flag_done)
     
     alpha_prev = alpha; beta_prev = beta;
     Theta_p_prev = Theta_p; Theta_np_prev = Theta_np;
-    
+   
 end
 
 %% Save
 
-save(strcat('learned_functions/PVTOL_raw_',num2str(N_tr),'_new','.mat'));
+save(strcat('learned_functions/PVTOL_H_raw_',num2str(N_tr),'.mat'));
 
 %% Gen pareto
 
@@ -180,7 +173,7 @@ legend_list = cell(max_itr,1);
 hold all
 for itr = 1:max_itr
     scatter(reg_err_all(itr),viol_all(itr),50,'filled'); 
-    text(reg_err_all(itr),viol_all(itr)+0.01,sprintf('%d',itr));
+    text(reg_err_all(itr)+0.01,viol_all(itr)+0.01,sprintf('%d',itr));
     legend_list{itr} = sprintf('%d',itr);
 end
 plot(reg_err_all,viol_all,'ks-','linewidth',1.5,'markersize',15);
@@ -199,12 +192,12 @@ Theta_np = reshape(theta_all(D_w*n_p+1:end,itr_best),D_w,n_np);
 
 %NOT VECTORIZED
 [f_h, B_h, df_h, dB_h] = construct_dyn(om_f, alpha, om_b, beta, O_dyn, kernel_f.L, kernel_b.L,n,m);
-save(strcat('learned_functions/PVTOL_Dyn_Functions_',num2str(N_tr),'_new','.mat'),...
+save(strcat('learned_functions/PVTOL_H_Dyn_Functions_',num2str(N_tr),'.mat'),...
         'f_h','df_h','B_h', 'dB_h');
 
 %VECTORIZED
 [W_h, dWp_h] = construct_metric(om_w_p,Theta_p,om_w_np,Theta_np, O_w, n,m, w_const); 
-save(strcat('learned_functions/PVTOL_Metric_Functions_',num2str(N_tr),'_new','.mat'),...
+save(strcat('learned_functions/PVTOL_H_Metric_Functions_',num2str(N_tr),'.mat'),...
         'W_h','dW_h','lambda');
 
 %% Evaluate regression quality & contraction constraints on full train & validation sets

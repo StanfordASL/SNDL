@@ -7,25 +7,25 @@ D_dyn = 2*O_dyn*n;
 D_w = 2*O_w;
 
 %exclude these components of x in f(x)
-n_dyn = 1:2;
+n_dyn = 1;
 
 %exclude these components of x in B(x)
-n_dyn_B = 1:6; %B should be constant for PVTOL
+n_dyn_B = [1,3];
 
 %exclude these components of x in W(x)
-n_W = 1:2;
+n_W = 1;
 
 % Kernel definitions
 kernel_f = struct('sigma',6,'L',eye(n));
-kernel_b = struct('sigma',1,'L',blkdiag(zeros(n-m),eye(m)));
+kernel_b = struct('sigma',6.0,'L',blkdiag(zeros(n-m),eye(m)));
 kernel_wp = struct('sigma',15.0);
 kernel_wnp = struct('sigma',15.0);
 
 %% Regularization & tuning constants
 
 mu_f = 1e-3;
-mu_b = 1e-6;
-mu_w = 1e-4;
+mu_b = 10*mu_f;
+mu_w = 1e-3;
 
 mu_s = 1e-2;
 
@@ -93,5 +93,4 @@ constants.eps_wl = eps_wl;
 constants.w_const = w_const;
 constants.pen_scale = pen_scale;
 constants.pen_tau = pen_tau;
-
 

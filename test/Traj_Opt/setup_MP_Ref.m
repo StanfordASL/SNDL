@@ -15,14 +15,16 @@ function [MP_Prob,L_e_full,t_grid] = ...
 %Tp: time-horizon (potentially can make a variable)
 %dt: time-resolution of final solution
 %x_eq,u_eq: final state&control values (think equilibrium)
-%P,alpha: terminal constraint: \|x*(Tp) - x_eq\|_P^2 \leq \alpha
-%RPI_bound: initial state bound based on geodesic energy:  E(x*(0),x(0)) <= RPI_bound
+%P,final_bound: terminal constraint: \|x*(Tp) - x_eq\|_P^2 \leq final_bound
+%initial_bound: initial state bound based on euclidean dist: \|x*(0) - x(0)\|^2 <= initial_bound
 %Q,R: state and control cost matrices
 %obs: obstacle information struct (if relevant)
+%pos_ref: [y,z] desired PVTOL fig-8 trajectory
 
 %%%% Outputs %%%%
 %MP_prob: tomlab problem struct
 %L_e_full: Lagrange interpolating polynomial for final solution
+%t_grid: time values for collocation points
 
 %% Constants
 
