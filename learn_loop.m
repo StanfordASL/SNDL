@@ -74,9 +74,6 @@ theta_all = nan(D_w*(n_p+n_np),max_itr);
 [W_p,W] = W_fnc(P_Wp*Theta_p_prev,P_Wnp*Theta_np_prev,n,m,1); %initialize W as identity
 partial_Wp = dWp_fnc(JP_Wp,Theta_p_prev,Nc,n,m);
 
-%flag for re-start
-flag_restart = 0;
-
 %flag for done
 flag_done = 0;
 
@@ -85,13 +82,11 @@ while (itr < max_itr) && (var_diff > eps_term) && (~flag_done)
     
     %% solve dynamics
     
-    if (~flag_restart)
-        fprintf('***************************************************\n');
-        fprintf('DYNAMICS\n');
-        
-        [alpha,beta] = solve_dynamics_SDP(alpha_prev,beta_prev,features,data,constants,Xc_i,Nc,max_slack,...
-                                                        JP_f,W_p,W,partial_Wp);
-    end
+    fprintf('***************************************************\n');
+    fprintf('DYNAMICS\n');
+
+    [alpha,beta] = solve_dynamics_SDP(alpha_prev,beta_prev,features,data,constants,Xc_i,Nc,max_slack,...
+                                                    JP_f,W_p,W,partial_Wp);
                                                 
     %% compute f(X), df(Xc)
     [f, dfdx_p] = compute_f_df(alpha,P_f,JP_f,n,m,Nc);
