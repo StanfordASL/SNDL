@@ -1,4 +1,4 @@
-function [W_p,W] = W_fnc(w_p, w_np, n, m)
+function [W_p,W] = W_fnc(w_p, w_np, n, m, w_const)
 
 %np' = (n-m)*((n-m)+1)/2
 %n' = n*(n+1)/2
@@ -8,13 +8,11 @@ function [W_p,W] = W_fnc(w_p, w_np, n, m)
 
 %% Convert to matrices first
 
-W_p = vec_to_sym(w_p,n-m);
-W_np = vec_to_sym(w_np,n);
+N = size(w_p,1);
 
-%% Assemble
+W = vec_to_sym([w_p,w_np],n) + repmat(w_const*eye(n),1,1,N);
 
-W = W_np; %W_np is zero in top-left (n-m) block
-W(1:(n-m), 1:(n-m), :) = W_p;
+W_p = W(1:(n-m),1:(n-m),:);
  
 
 

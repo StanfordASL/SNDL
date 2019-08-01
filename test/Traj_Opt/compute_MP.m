@@ -2,6 +2,7 @@ function [MP_state,MP_ctrl,converged] = ...
     compute_MP(Prob,act_p,n,m,N,L_e,XU_guess,t_ref,t_grid,x_con)
 
 %% Solution guess
+
 x_guess = interp1(t_ref,XU_guess(:,1:n),t_grid);
 u_guess = interp1(t_ref,XU_guess(:,n+1:n+m),t_grid);
 
@@ -19,6 +20,7 @@ x0 = reshape(x_guess',(N+1)*n,1);
 u0 = reshape(u_guess',(N+1)*m,1);
 
 Prob = modify_x_0(Prob,[x0;u0]);
+
 
 %% Update constraint information
 Prob.user.x_act = act_p;

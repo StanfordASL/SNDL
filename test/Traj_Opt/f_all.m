@@ -1,4 +1,4 @@
-function f_all = NMPC_dyn(f,x,n,N)
+function f_all = f_all(f,x,n,N)
 
 f_all = zeros((N+1)*n,1);
 for j = 1:N+1

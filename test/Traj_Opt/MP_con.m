@@ -1,22 +1,22 @@
-function c = MP_con(xu,Prob)
+function c = MP_con(xu,Prob,n,m,N,P,D,f,B,Tp,x_eq)
 %Dynamics, and terminal
 
-n = Prob.user.n;
-N = Prob.user.N;
+%actual initial state
+x_init = Prob.user.x_act;
 
 c = zeros(n*(N+1)+2,1);
 
 %% Dynamics constraints
 
-c(1:n*(N+1)) = (2/Prob.user.Tp)*Prob.user.D*xu(1:n*(N+1)) -...
-    (f_all(Prob.user.f,xu(1:n*(N+1)),n,N) + Prob.user.B_full*xu(n*(N+1)+1:end));
+c(1:n*(N+1)) = (2/Tp)*D*xu(1:n*(N+1)) -...
+                dyn_all(f,B,xu(1:n*(N+1)),xu(n*(N+1)+1:end),n,m,N);
 
 %% Initial state constraint
 
-c(n*(N+1)+1) = (xu(1:n)-Prob.user.x_act)'*eye(n)*(xu(1:n)-Prob.user.x_act);
+c(n*(N+1)+1) = (xu(1:n)-x_init)'*(xu(1:n)-x_init);
 
 %% Terminal constraint
-c(n*(N+1)+2) = (xu(n*N+1:n*(N+1))-Prob.user.x_eq)'*(xu(n*N+1:n*(N+1))-Prob.user.x_eq);
+c(n*(N+1)+2) = (xu(n*N+1:n*(N+1))-x_eq)'*P*(xu(n*N+1:n*(N+1))-x_eq);
 
 end
 

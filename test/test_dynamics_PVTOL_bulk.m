@@ -1,83 +1,70 @@
-function test_dynamics_PVTOL_bulk(type,hybrid,N_itr)
+function test_dynamics_PVTOL_bulk(model,ctrl,N_itr)
 
 %Simulate model tracking for the generated trajectories
 
 %%%%%%% Inputs %%%%%%%%
-%type: 'uncon': unconstrained, regularized baseline model
+%model: 'uncon': unconstrained, regularized baseline model
 %      'unconu': unconstrained, un-regularized baseline model
 %      'ccm': CCM regularized model
-%hybrid: 1 if want CCM-LQR hybrid controller (used only for CCM model sims)
-%        0 if want LQR controller (used only for CCM model simulations)
+%ctrl: 'lqr': TV-LQR controller
+%      'mpc': MPC tracking
+%      'ccm': CCM controller
 %N_itr: #points used in training (demonstration) set for regression loss
 
 %% Load trajectories
 
-load(strcat('results/PVTOL_test_traj_',type,'_',num2str(N_itr),'.mat'));
+load(strcat('results_new/PVTOL_test_traj_',model,'_',num2str(N_itr),'_new','.mat'));
+N_sim = length(Tref);
 
-%% Sim CCM
-if strcmp(type,'ccm')
-    %% ccm
+%% Load initial states
+
+load('results/PVTOL_init_guess.mat','X0');
+
+%% Initialize data struct
+
+if strcmp(ctrl,'ccm') 
+    DATA = cell(N_sim,5);
+else
+    DATA = cell(N_sim,4);
+end
+
+%% Simulate
+
+do_plot = 0;
+
+for idx = 1:N_sim
+    disp(idx);
     
-    % setup data struct
-    N_sim = length(Tref);
-    PVTOL_CCM_DATA = cell(N_sim,6);
-    
-    % Go through and sim
-    
-    for idx = 1:N_sim
-        disp(idx);
-        [PVTOL_CCM_DATA{idx,1},...
-            PVTOL_CCM_DATA{idx,2},...
-            PVTOL_CCM_DATA{idx,3},...
-            PVTOL_CCM_DATA{idx,4},...
-            PVTOL_CCM_DATA{idx,5},...
-            PVTOL_CCM_DATA{idx,6}] = test_CCM_dynamics_PVTOL(N_itr,0,hybrid,Tref{idx},x_opt{idx},u_opt{idx});
+    if strcmp(ctrl,'lqr')
+        
+        [DATA{idx,1},DATA{idx,2},DATA{idx,3},DATA{idx,4}] = test_dynamics_PVTOL_LQR(N_itr,do_plot,model,Tref{idx},x_opt{idx},u_opt{idx},X0(idx,:)');
+        
+    elseif strcmp(ctrl,'mpc')
+        
+        [DATA{idx,1},DATA{idx,2},DATA{idx,3},DATA{idx,4}] = test_dynamics_PVTOL_MPC(N_itr,do_plot,model,Tref{idx},x_opt{idx},u_opt{idx},X0(idx,:)');
+        
+    else
+        
+        [DATA{idx,1},DATA{idx,2},DATA{idx,3},DATA{idx,4},DATA{idx,5}] = test_dynamics_PVTOL_CCM(N_itr,do_plot,Tref{idx},x_opt{idx},u_opt{idx},X0(idx,:)');
     end
     
-    % save
-    save(strcat('results/PVTOL_CCM_SIM_',num2str(N_itr),'_',num2str(hybrid),'.mat'),'PVTOL_CCM_DATA');
+end
+
+%% Save
+
+if strcmp(model,'uncon')
+    PVTOL_UNCON_DATA = DATA;
+    save(strcat('results/PVTOL_UNCON_',num2str(N_itr),'_',upper(ctrl),'.mat'),'PVTOL_UNCON_DATA');
     
-elseif strcmp(type,'uncon')
-    %% uncon
+elseif strcmp(model,'unconu')
+    PVTOL_UNCONU_DATA = DATA;
+    save(strcat('results/PVTOL_UNCONU_',num2str(N_itr),'_',upper(ctrl),'.mat'),'PVTOL_UNCONU_DATA');
     
-    %setup data
-    N_sim = length(Tref);
-    PVTOL_UNCON_DATA = cell(N_sim,4);
-    
-    % Go through and sim
-    
-    for idx = 1:N_sim
-        disp(idx);
-        [PVTOL_UNCON_DATA{idx,1},...
-            PVTOL_UNCON_DATA{idx,2},...
-            PVTOL_UNCON_DATA{idx,3},...
-            PVTOL_UNCON_DATA{idx,4}] = test_uncon_dynamics_PVTOL(N_itr,0,Tref{idx},x_opt{idx},u_opt{idx});
-    end
-    
-    % save
-    
-    save(strcat('results/PVTOL_UNCON_SIM_',num2str(N_itr),'.mat'),'PVTOL_UNCON_DATA');
-    
-elseif strcmp(type,'unconu')
-    %% uncon
-    
-    %setup data
-    N_sim = length(Tref);
-    PVTOL_UNCONU_DATA = cell(N_sim,4);
-    
-    % Go through and sim
-    
-    for idx = 1:N_sim
-        disp(idx);
-        [PVTOL_UNCONU_DATA{idx,1},...
-            PVTOL_UNCONU_DATA{idx,2},...
-            PVTOL_UNCONU_DATA{idx,3},...
-            PVTOL_UNCONU_DATA{idx,4}] = test_unconu_dynamics_PVTOL(N_itr,0,Tref{idx},x_opt{idx},u_opt{idx});
-    end
-    
-    % save
-    
-    save(strcat('results/PVTOL_UNCONU_SIM_',num2str(N_itr),'.mat'),'PVTOL_UNCONU_DATA');
-    
+elseif strcmp(model,'ccm')
+    PVTOL_CCM_DATA = DATA;
+    save(strcat('results_new/PVTOL_CCM_',num2str(N_itr),'_',upper(ctrl),'_new','.mat'),'PVTOL_CCM_DATA');
+end
+
+ 
 end
 

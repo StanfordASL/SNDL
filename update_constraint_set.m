@@ -1,10 +1,22 @@
-function[Xc_i_up,constraint_viol,flag_done,max_slack] = update_constraint_set(eps_l,delta_wl,eps_wl,tol,W_p,W,partial_Wp,f,dfdx_p,lambda,N,Nc,n,m,Xc_i)
+function[Xc_i_up,constraint_viol,flag_done,max_slack] = update_constraint_set(constants,W_p,W,partial_Wp,f,dfdx_p,lambda,Xc_i)
 
 %sort points in Xc based on constraint violation
 %eliminate points with eig(F), eig(w_lower*I - W) <= -tol
 %generate replacements from X \ Xc
 
-%% Check constraint violation
+%% extract constants
+
+n = constants.n;
+m = constants.m;
+eps_l = constants.eps_l;
+delta_wl = constants.delta_wl;
+eps_wl = constants.eps_wl;
+tol = constants.tol;
+eps_term = constants.eps_term;
+N = constants.N;
+
+
+%% Compute constraint violation
 
 dWp_f = zeros((n-m),(n-m),N);
 for j = 1:n-m
@@ -23,7 +35,7 @@ for k = 1:N
     lmi_viol(k,2) = max(eig((delta_wl+eps_wl)*eye(n)-W(:,:,k))); %want <0
 end
 
-fprintf('CCM viol: %.3f, w_lower viol: %.3f, ', max(lmi_viol(:,1)),max(lmi_viol(:,2)));
+fprintf('Full Set: CCM viol: %.3f, w_lower viol: %.3f, ', max(lmi_viol(:,1)),max(lmi_viol(:,2)));
 
 max_slack = max(lmi_viol(:,1));
 
@@ -33,20 +45,36 @@ constraint_viol = max(lmi_viol,[],2);
 %find top constraint violators
 [sorted_all,idx_all] = sort(constraint_viol,'descend');
 
-%idx_all(1:n_violating) are violations
-n_violating = find(sorted_all<=1e-3,1)-1;
-if isempty(n_violating)
-    n_violating = N;
+%% Check for termination
+
+%idx_all(1:n_term) are above termination tolerance
+n_term = find(sorted_all<=eps_term,1)-1;
+if isempty(n_term)
+    n_term = N;
 end
-fprintf('n_viol:%d, ',n_violating);
+fprintf('n_viol:%d, ',n_term);
+
+if n_term == 0
+    Xc_i_up = [];
+    flag_done = 1;
+    return;
+else
+    flag_done = 0;
+    %get actual number of violations
+    %idx_all(1:n_violating) are above 0
+    n_violating = find(sorted_all<=0,1)-1;
+    if isempty(n_violating)
+        n_violating = N;
+    end
+end    
 
 %% Update Xc
 
 %start:
 [sorted,idx] = sort(constraint_viol(Xc_i),'descend');
 
-%idx(1:n_keep) are above tolerance
-n_keep = find(sorted <= -tol)-1;
+%retain idx(1:n_keep) in Xc_i
+n_keep = find(sorted <= -tol,1)-1;
 
 n_disc = 0; 
 if isempty(n_keep)
@@ -61,7 +89,7 @@ else
 end
 fprintf('n_disc:%d, ',n_disc);
 
-%now add (at most n_disc) violating points in X \ Xc
+%now add (at most n_add_max) violating points in X \ Xc
 n_added = 0; i = 1;
 while (i <= n_violating) && (n_added < n_add_max)
     if (~ismember(idx_all(i),Xc_i))
@@ -72,10 +100,5 @@ while (i <= n_violating) && (n_added < n_add_max)
 end
 
 fprintf('Nc = %d \n', length(Xc_i_up));
-
-%% set flag for all constraints satisfied
-
-flag_done = n_violating==0;
-
 
 end

@@ -1,4 +1,4 @@
-function [L_lqr,lambda_lqr] = solve_TVLQR(t_ref,x_opt,u_opt,f_h,B_h,df_h,dB_h,n,m)
+function L_lqr = solve_TVLQR(t_ref,x_opt,u_opt,f_h,B_h,df_h,dB_h,n,m)
 
 %x_dot = f(x) + B(x)*u
 %delta x_dot = (dfdx + u*dB_dx)*delta_x + B(x)delta_u
