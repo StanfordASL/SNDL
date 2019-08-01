@@ -31,14 +31,14 @@ features = struct('P_f',P_f,'P_b',P_b,'Perm_Tr',Perm_Tr);
 %Unconstrainted, regularized baseline
 [alpha_un, beta_un] = solve_dynamics_unconstrained(Perm_Tr,P_f,P_b,U,X_dot,1.0e-4,mu_b,n,m,Xtr_i,N_tr,D_dyn);
 [f_h, B_h, df_h, dB_h] = construct_dyn(om_f, alpha_un, om_b, beta_un, O_dyn, kernel_f.L, kernel_b.L,n,m);
-save(strcat('learned_functions/PVTOL_H_uncon_Dyn_Functions_',num2str(N_tr),'.mat'),...
+save(strcat('learned_functions/PVTOL_uncon_Dyn_Functions_',num2str(N_tr),'.mat'),...
         'f_h','B_h','df_h','dB_h');
 clear f_h B_h df_h dB_h;
 
 % %Unconstrainted, unregularized baseline
 [alpha_unu, beta_unu] = solve_dynamics_unconstrained(Perm_Tr,P_f,P_b,U,X_dot,0.0,mu_b,n,m,Xtr_i,N_tr,D_dyn);
 [f_h, B_h, df_h, dB_h] = construct_dyn(om_f, alpha_unu, om_b, beta_unu, O_dyn, kernel_f.L, kernel_b.L,n,m);
-save(strcat('learned_functions/PVTOL_H_unconu_Dyn_Functions_',num2str(N_tr),'.mat'),...
+save(strcat('learned_functions/PVTOL_unconu_Dyn_Functions_',num2str(N_tr),'.mat'),...
         'f_h','B_h','df_h','dB_h');
 clear f_h B_h df_h dB_h;
 
