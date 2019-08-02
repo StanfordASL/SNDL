@@ -3,8 +3,11 @@ clear; close all; clc
 
 %% Load learned model
 
-load('PVTOL_H_Dyn_Functions_1000.mat');
-% load('PVTOL_H_uncon_Dyn_Functions_1000.mat');      
+load('PVTOL_H_Dyn_Functions_1000_new.mat');
+% load('PVTOL_H_uncon_Dyn_Functions_1000_new.mat');      
+
+%load('PVTOL_H_Dyn_Functions_150.mat');
+%load('PVTOL_H_uncon_Dyn_Functions_150.mat');     
 
 
 %% Setup traj optimizer
